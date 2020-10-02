@@ -151,7 +151,7 @@ drawBoard()
 while True:
     c = screen.getkey()
     if c == 'p':
-        screen.addstr('stinky shit!\n')
+        screen.addstr('stinky!\n')
         screen.erase()
         screen.refresh()
         drawBoard()
