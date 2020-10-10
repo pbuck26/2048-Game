@@ -17,9 +17,6 @@ score     = 0
 moves     = 0
 board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
 
-def centerBoard():
-    pass
-
 def drawBoard(board):
     board = addNewSquare(board)
     displayboard = copy.deepcopy(board)
@@ -54,29 +51,13 @@ def drawBoard(board):
     screen.addstr('#       #       #       #       #\n')
     screen.addstr('#################################\n')
 
-# drawBoard(board)
-
-# board = addNewSquare(board)
-
-# for key in testInput:
-#     print(str(board))
-#     boardCheck = copy.deepcopy(board)
-#     board = recalculateSquares(key, board)
-#     print(str(board))
-#     if board == boardCheck:
-#         if not any(None in sublist for sublist in board):
-#             print("game over")
-#         else:
-#             continue #move didnt do anything
-#     else:
-#         board = addNewSquare(board)
-
 drawBoard(board)
+# add intial square
 board = addNewSquare(board)
 while True:
     c = screen.getkey()
     if c == 'p':
-        screen.addstr('stinky shit!\n')
+        screen.addstr('YEEEEEEEET!\n')
         screen.erase()
         screen.refresh()
         drawBoard(board)
