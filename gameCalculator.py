@@ -28,15 +28,18 @@ def addNewSquare(board):
 def shiftSquare(indexNeeded, flipIndexFlag, board):
     for i in range(0, 4):
         if flipIndexFlag:
+            # grab row
             boardArray = board[i]
         else:
+            # grab column
             boardArray = [row[i] for row in board]
+        # Temorarily remove Nones
         boardArray = [x for x in boardArray if x != None]
         #check if any merges can be made
         boardArray = mergeCheck(indexNeeded, boardArray)
         # add Nones back to list
         boardArray = addNones(boardArray, indexNeeded)
-        # modify global board values
+        # add row/column back to board
         for j in range(0,4):
             if flipIndexFlag:
                 board[i][j] = boardArray[j]
@@ -46,13 +49,13 @@ def shiftSquare(indexNeeded, flipIndexFlag, board):
 
 def addNones(boardArray, indexNeeded):
     while len(boardArray) < 4:
+        # need to appned Nones to last index for up/left moves
+        # down/right is first index
         if indexNeeded == -1:
             indexNeeded = len(boardArray)
         boardArray.insert(indexNeeded, None)
     return boardArray
 
-
-# input is 4x1 or less array
 # output is array with all merges completed
 def mergeCheck(indexNeeded, boardArray):
     print(str(boardArray))
@@ -94,14 +97,18 @@ def recalculateSquares(keystroke, board):
         print("invalid key")
     return board
 
-#intitialize varibales
-HighScore = 0
-score     = 0
-moves     = 0
-board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
-testInput = ['KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
 
-board = addNewSquare(board)
+########################
+#      TEST ONLY       #
+########################
+#intitialize varibales
+#HighScore = 0
+#score     = 0
+#moves     = 0
+#board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
+#testInput = ['KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
+
+#board = addNewSquare(board)
 
 # for key in testInput:
 #     print(str(board))
