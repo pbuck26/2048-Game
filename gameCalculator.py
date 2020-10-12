@@ -13,7 +13,10 @@ def addNewSquare(board):
     # check num of empty squares
     for i in range(0,4):
         for j in range(0,4):
-            if board[i][j] == None:
+            try:
+                if board[i][j] == None:
+                    orderedEmptySquares.append([i, j])
+            except:
                 orderedEmptySquares.append([i, j])
     if not orderedEmptySquares:
         return
@@ -25,39 +28,38 @@ def addNewSquare(board):
     board[orderedEmptySquares[resultSquare][0]][orderedEmptySquares[resultSquare][1]] = newNum
     return board
 
-def shiftSquare(indexNeeded, flipIndexFlag, board):
+def shiftSquare(indexNeeded, flipIndexFlag, board, score):
     for i in range(0, 4):
         if flipIndexFlag:
-            # grab row
             boardArray = board[i]
         else:
-            # grab column
             boardArray = [row[i] for row in board]
-        # Temorarily remove Nones
         boardArray = [x for x in boardArray if x != None]
         #check if any merges can be made
-        boardArray = mergeCheck(indexNeeded, boardArray)
+        output = mergeCheck(indexNeeded, boardArray, score)
+        boardArray = output[0]
+        score = output[1]
         # add Nones back to list
         boardArray = addNones(boardArray, indexNeeded)
-        # add row/column back to board
+        # modify global board values
         for j in range(0,4):
             if flipIndexFlag:
                 board[i][j] = boardArray[j]
             else:
                 board[j][i] = boardArray[j]
-    return board
+    return [board,score]
 
 def addNones(boardArray, indexNeeded):
     while len(boardArray) < 4:
-        # need to appned Nones to last index for up/left moves
-        # down/right is first index
         if indexNeeded == -1:
             indexNeeded = len(boardArray)
         boardArray.insert(indexNeeded, None)
     return boardArray
 
+
+# input is 4x1 or less array
 # output is array with all merges completed
-def mergeCheck(indexNeeded, boardArray):
+def mergeCheck(indexNeeded, boardArray, score):
     print(str(boardArray))
     if indexNeeded == -1:
             boardArray.reverse()
@@ -65,60 +67,63 @@ def mergeCheck(indexNeeded, boardArray):
     while i  < len(boardArray):
         if boardArray[i] == boardArray[i- 1]:
             boardArray[i-1] *= 2
+            # scoring algorthim is to add
+            # the resulting number of each merge to 
+            # total score
+            score += boardArray[i-1]
             #remove duplicate
             del boardArray[i]
         i += 1
     if indexNeeded == -1:
         boardArray.reverse()
         print(str(boardArray))
-    return boardArray
+    return boardArray,score
 
-def recalculateSquares(keystroke, board):
+def recalculateSquares(keystroke, board, score):
     if keystroke == 'KEY_DOWN':
         listInsertIndex = 0
         flipIndexFlag = False
-        board = shiftSquare(listInsertIndex, flipIndexFlag, board)
+        board,score = shiftSquare(listInsertIndex, flipIndexFlag, board, score)
 
     elif keystroke == 'KEY_UP':
         listInsertIndex = -1
         flipIndexFlag = False
-        shiftSquare(listInsertIndex, flipIndexFlag, board)
+        board,score = shiftSquare(listInsertIndex, flipIndexFlag, board, score)
 
     elif keystroke == 'KEY_LEFT':
         listInsertIndex = -1
         flipIndexFlag = True
-        shiftSquare(listInsertIndex, flipIndexFlag, board)
+        board,score = shiftSquare(listInsertIndex, flipIndexFlag, board, score)
 
     elif keystroke == 'KEY_RIGHT':
         listInsertIndex = 0
         flipIndexFlag = True
-        shiftSquare(listInsertIndex, flipIndexFlag, board)
+        board,score = shiftSquare(listInsertIndex, flipIndexFlag, board, score)
     else:
         print("invalid key")
-    return board
+    return board, score
 
 
-########################
-#      TEST ONLY       #
-########################
+
+#### testing purposes only
 #intitialize varibales
-#HighScore = 0
-#score     = 0
-#moves     = 0
-#board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
-#testInput = ['KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
+HighScore = 0
+score     = 0
+moves     = 0
+board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
+testInput = ['KEY_DOWN', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
 
-#board = addNewSquare(board)
+board = addNewSquare(board)
 
-# for key in testInput:
-#     print(str(board))
-#     boardCheck = copy.deepcopy(board)
-#     board = recalculateSquares(key, board)
-#     print(str(board))
-#     if board == boardCheck:
-#         if not any(None in sublist for sublist in board):
-#             print("game over")
-#         else:
-#             continue #move didnt do anything
-#     else:
-#         board = addNewSquare(board)
+for key in testInput:
+    print(str(board))
+    boardCheck = copy.deepcopy(board)
+    board,score = recalculateSquares(key, board, score)
+    print(str(board))
+    if board == boardCheck:
+        if not any(None in sublist for sublist in board):
+            print("game over")
+        else:
+            continue #move didnt do anything
+    else:
+        board = addNewSquare(board)

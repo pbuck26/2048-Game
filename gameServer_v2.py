@@ -8,6 +8,9 @@ screen = curses.initscr()
 curses.noecho()
 curses.cbreak()
 screen.keypad(True)
+curses.start_color()
+#curses.use_default_colors()
+
 
 screen.addstr("Lets get ready to rumble!!!!!\n\n\n")
 
@@ -17,11 +20,13 @@ score     = 0
 moves     = 0
 board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
 
-def drawBoard(board):
+def drawBoard(board, score):
     board = addNewSquare(board)
     displayboard = copy.deepcopy(board)
     for i in range(0,4):
         for j in range(0,4):
+            if len(board[i]) <= 1:
+                screen.addstr(board)
             if board[i][j] == None:
                 displayboard[i][j] = ' '
     screen.addstr('            2048\n')
@@ -49,23 +54,59 @@ def drawBoard(board):
     screen.addstr('#       #       #       #       #\n')
     screen.addstr(bottomrow)
     screen.addstr('#       #       #       #       #\n')
-    screen.addstr('#################################\n')
+    screen.addstr('#################################\n\n\n')
+    screen.addstr(' Press Q to quit')
 
-drawBoard(board)
-# add intial square
+
+def getUserName():
+    curses.echo()
+    screen.addstr(2,0, "Welcome to the thunderdome bitch\nEnter Username(10 char max):")
+    screen.refresh
+    username = screen.getstr(4, 0, 20)
+    return username
+    #screen.addstr(testString)
+    #### color test #####
+    #testString = str(6)
+    #screen.addstr(testString, curses.color_pair(7))
+
+# drawBoard(board)
+
+######################################################################
+# for key in testInput:
+#     print(str(board))
+#     boardCheck = copy.deepcopy(board)
+#     board = recalculateSquares(key, board)
+#     print(str(board))
+#     if board == boardCheck:
+#         if not any(None in sublist for sublist in board):
+#             print("game over")
+#         else:
+#             continue #move didnt do anything
+#     else:
+#         board = addNewSquare(board)
+######################################################################
+
+username = getUserName()
+#TODO: check if username exists
+#TODO: grab leaderboard data from database.
+#TODO: show leaderboard before game starts
+#TODO: option selector?
+#TODO: 
+
+drawBoard(board, score)
 board = addNewSquare(board)
 while True:
     c = screen.getkey()
     if c == 'p':
-        screen.addstr('YEEEEEEEET!\n')
+        screen.addstr('stinky shit!\n')
         screen.erase()
         screen.refresh()
-        drawBoard(board)
+        drawBoard(board, score)
     elif c == 'q':
         break  # Exit the while loop
     elif c == 'KEY_LEFT' or c == 'KEY_RIGHT' or c == 'KEY_UP' or c == 'KEY_DOWN':
         boardCheck = copy.deepcopy(board)
-        board = recalculateSquares(c, board)
+        board,score = recalculateSquares(c, board, score)
         if board == boardCheck:
             if not any(None in sublist for sublist in board):
                 screen.erase()
@@ -75,7 +116,7 @@ while True:
                 continue # move didnt do anything
         screen.erase()
         screen.refresh()
-        drawBoard(board)
+        drawBoard(board, score)
     else:
         screen.addstr('INVALID KEY TRY AGAIN!!!!!\n')
 
