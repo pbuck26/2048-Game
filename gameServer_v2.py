@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from gameCalculator import addNewSquare, recalculateSquares
 
 import curses
@@ -20,7 +20,7 @@ score     = 0
 moves     = 0
 board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
 
-def drawBoard(board, score):
+def drawBoard(board, score, HighScore):
     board = addNewSquare(board)
     displayboard = copy.deepcopy(board)
     for i in range(0,4):
@@ -29,7 +29,7 @@ def drawBoard(board, score):
                 screen.addstr(board)
             if board[i][j] == None:
                 displayboard[i][j] = ' '
-    screen.addstr('            2048\n')
+    screen.addstr('\n\n\n            2048\n')
     Display = 'Current score: {}  High Score: {}\n\n\n\n'.format(score, HighScore)
     screen.addstr(Display)
 
@@ -63,7 +63,49 @@ def getUserName():
     screen.addstr(2,0, "Welcome to the thunderdome bitch\nEnter Username(10 char max):")
     screen.refresh
     username = screen.getstr(4, 0, 20)
+    screen.erase()
     return username
+
+def getLeaderboard():
+    import mysql.connector
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="patrickbuckley",
+        password="",
+        database="game2048"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM leaderboard ORDER BY score DESC")
+    leaderboard = mycursor.fetchall()
+    # show top 5
+    #answer = screen.getstr("Show Leaderboard? (y/n", 1)
+    #if answer == "n":
+        #return
+    screen.addstr('\n\n\n\nLEADERBOARD\n')
+    screen.refresh
+    count = 0
+    HighScore = leaderboard[0][2]
+    for x in leaderboard:
+        count += 1
+        scoreFormatted = str(count) + ": " + x[1] + " " + str(x[2]) + "\n"
+        screen.addstr(scoreFormatted)
+    
+    screen.refresh
+    return [HighScore, leaderboard]
+
+def saveToDatabase(username, score):
+    import mysql.connector
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="patrickbuckley",
+        password="",
+        database="game2048"
+    )
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO leaderboard (username, score) VALUES (%s, %s)"
+    values = (username, str(score))
+    mycursor.execute(sql, values)
+    mydb.commit()
     #screen.addstr(testString)
     #### color test #####
     #testString = str(6)
@@ -87,13 +129,17 @@ def getUserName():
 ######################################################################
 
 username = getUserName()
+
 #TODO: check if username exists
 #TODO: grab leaderboard data from database.
 #TODO: show leaderboard before game starts
 #TODO: option selector?
-#TODO: 
 
-drawBoard(board, score)
+output = getLeaderboard()
+HighScore = output[0]
+leaderboard = output[1]
+
+drawBoard(board, score, HighScore)
 board = addNewSquare(board)
 while True:
     c = screen.getkey()
@@ -101,7 +147,7 @@ while True:
         screen.addstr('stinky shit!\n')
         screen.erase()
         screen.refresh()
-        drawBoard(board, score)
+        drawBoard(board, score, HighScore)
     elif c == 'q':
         break  # Exit the while loop
     elif c == 'KEY_LEFT' or c == 'KEY_RIGHT' or c == 'KEY_UP' or c == 'KEY_DOWN':
@@ -112,13 +158,23 @@ while True:
                 screen.erase()
                 screen.refresh()
                 screen.addstr('GAME OVER IDIOT\n')
+                break
             else:
                 continue # move didnt do anything
         screen.erase()
         screen.refresh()
-        drawBoard(board, score)
+        drawBoard(board, score, HighScore)
     else:
         screen.addstr('INVALID KEY TRY AGAIN!!!!!\n')
+
+screen.addstr("Would you like to save {}? (y/n)".format(username))
+screen.refresh
+answer = screen.getstr(0,4,20)
+
+if answer == "y":
+    saveToDatabase(username, score)
+
+
 
 # Terminate the curses module
 curses.nocbreak()

@@ -60,7 +60,6 @@ def addNones(boardArray, indexNeeded):
 # input is 4x1 or less array
 # output is array with all merges completed
 def mergeCheck(indexNeeded, boardArray, score):
-    print(str(boardArray))
     if indexNeeded == -1:
             boardArray.reverse()
     i = 1
@@ -76,7 +75,6 @@ def mergeCheck(indexNeeded, boardArray, score):
         i += 1
     if indexNeeded == -1:
         boardArray.reverse()
-        print(str(boardArray))
     return boardArray,score
 
 def recalculateSquares(keystroke, board, score):
@@ -100,30 +98,30 @@ def recalculateSquares(keystroke, board, score):
         flipIndexFlag = True
         board,score = shiftSquare(listInsertIndex, flipIndexFlag, board, score)
     else:
-        print("invalid key")
+        return board,score
     return board, score
 
 
 
-#### testing purposes only
-#intitialize varibales
-HighScore = 0
-score     = 0
-moves     = 0
-board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
-testInput = ['KEY_DOWN', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
+# #### testing purposes only
+# #intitialize varibales
+# HighScore = 0
+# score     = 0
+# moves     = 0
+# board     = [[None,None,None, None],[None,None,None, None],[None,None,None, None], [None, None, None, None]]
+# testInput = ['KEY_DOWN', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN','KEY_RIGHT', 'KEY_LEFT', 'KEY_UP', 'KEY_DOWN']
 
-board = addNewSquare(board)
+# board = addNewSquare(board)
 
-for key in testInput:
-    print(str(board))
-    boardCheck = copy.deepcopy(board)
-    board,score = recalculateSquares(key, board, score)
-    print(str(board))
-    if board == boardCheck:
-        if not any(None in sublist for sublist in board):
-            print("game over")
-        else:
-            continue #move didnt do anything
-    else:
-        board = addNewSquare(board)
+# for key in testInput:
+#     print(str(board))
+#     boardCheck = copy.deepcopy(board)
+#     board,score = recalculateSquares(key, board, score)
+#     print(str(board))
+#     if board == boardCheck:
+#         if not any(None in sublist for sublist in board):
+#             print("game over")
+#         else:
+#             continue #move didnt do anything
+#     else:
+#         board = addNewSquare(board)
